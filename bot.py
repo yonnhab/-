@@ -6,7 +6,8 @@ from aiogram.types import Message
 from aiohttp import web 
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-
+print("--- ЗАПУСК БОТА ---")
+print("Токен найден:", bool(TOKEN))
 # Ваше кодовое слово
 SECRET_WORD = "дайв"
 
@@ -38,10 +39,8 @@ async def handle(request):
 
 
 async def main():
-    # Запускаем бота в фоне
     asyncio.create_task(dp.start_polling(bot))
     
-    # Запускаем веб-сервер
     app = web.Application()
     app.router.add_get('/', handle)
     runner = web.AppRunner(app)
