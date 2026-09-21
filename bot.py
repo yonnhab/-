@@ -39,11 +39,14 @@ async def handle(request):
 
 
 async def main():
+    print(">>> ВХОД В MAIN")
     try:
         # Запускаем бота в фоне
+        print(">>> Запуск бота...")
         asyncio.create_task(dp.start_polling(bot))
         
         # Запускаем веб-сервер
+        print(">>> Запуск веб-сервера...")
         app = web.Application()
         app.router.add_get('/', handle)
         runner = web.AppRunner(app)
@@ -51,10 +54,14 @@ async def main():
         port = int(os.getenv("PORT", 8080))
         site = web.TCPSite(runner, '0.0.0.0', port)
         await site.start()
+        print(f">>> Веб-сервер запущен на порту {port}")
         
-        # Бесконечное ожидание
-        await asyncio.Event().wait()
+        # Бесконечное ожидание (более надежный способ для Render)
+        print(">>> Уходим в бесконечное ожидание...")
+        while True:
+            await asyncio.sleep(3600)
+            
     except Exception as e:
-        print(f"КРИТИЧЕСКАЯ ОШИБКА: {e}")
+        print(f"!!! КРИТИЧЕСКАЯ ОШИБКА: {e}")
         import traceback
         traceback.print_exc()
