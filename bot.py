@@ -36,6 +36,7 @@ async def handle_secret(message: Message):
 async def handle(request):
     return web.Response(text="Bot is running!")
 
+
 async def main():
     # Запускаем бота в фоне
     asyncio.create_task(dp.start_polling(bot))
@@ -49,10 +50,4 @@ async def main():
     site = web.TCPSite(runner, '0.0.0.0', port)
     await site.start()
     
-    # Бесконечное ожидание
     await asyncio.Event().wait()
-
- await asyncio.Event().wait()
-
-if __name__ == "__main__":
-    asyncio.run(main())
