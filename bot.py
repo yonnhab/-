@@ -39,14 +39,22 @@ async def handle(request):
 
 
 async def main():
-    asyncio.create_task(dp.start_polling(bot))
-    
-    app = web.Application()
-    app.router.add_get('/', handle)
-    runner = web.AppRunner(app)
-    await runner.setup()
-    port = int(os.getenv("PORT", 8080))
-    site = web.TCPSite(runner, '0.0.0.0', port)
-    await site.start()
-    
-    await asyncio.Event().wait()
+    try:
+        # Запускаем бота в фоне
+        asyncio.create_task(dp.start_polling(bot))
+        
+        # Запускаем веб-сервер
+        app = web.Application()
+        app.router.add_get('/', handle)
+        runner = web.AppRunner(app)
+        await runner.setup()
+        port = int(os.getenv("PORT", 8080))
+        site = web.TCPSite(runner, '0.0.0.0', port)
+        await site.start()
+        
+        # Бесконечное ожидание
+        await asyncio.Event().wait()
+    except Exception as e:
+        print(f"КРИТИЧЕСКАЯ ОШИБКА: {e}")
+        import traceback
+        traceback.print_exc()
