@@ -37,31 +37,33 @@ async def handle_secret(message: Message):
 async def handle(request):
     return web.Response(text="Bot is running!")
 
+async def start_bot():
+    try:
+        print(">>> Попытка запуска бота...", flush=True)
+        await dp.start_polling(bot)
+    except Exception as e:
+        print(f"!!! ОШИБКА БОТА: {e}", flush=True)
 
 async def main():
-    print(">>> ВХОД В MAIN")
-    try:
-        # Запускаем бота в фоне
-        print(">>> Запуск бота...")
-        asyncio.create_task(dp.start_polling(bot))
-        
-        # Запускаем веб-сервер
-        print(">>> Запуск веб-сервера...")
-        app = web.Application()
-        app.router.add_get('/', handle)
-        runner = web.AppRunner(app)
-        await runner.setup()
-        port = int(os.getenv("PORT", 8080))
-        site = web.TCPSite(runner, '0.0.0.0', port)
-        await site.start()
-        print(f">>> Веб-сервер запущен на порту {port}")
-        
-        # Бесконечное ожидание (более надежный способ для Render)
-        print(">>> Уходим в бесконечное ожидание...")
-        while True:
-            await asyncio.sleep(3600)
-            
-    except Exception as e:
-        print(f"!!! КРИТИЧЕСКАЯ ОШИБКА: {e}")
-        import traceback
-        traceback.print_exc()
+    print(">>> ВХОД В MAIN", flush=True)
+    
+    # Запускаем бота в фоне
+    asyncio.create_task(start_bot())
+    
+    # Запускаем веб-сервер
+    print(">>> Запуск веб-сервера...", flush=True)
+    app = web.Application()
+    app.router.add_get('/', handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.getenv("PORT", 8080))
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    await site.start()
+    print(f">>> Веб-сервер запущен на порту {port}", flush=True)
+    
+    # Бесконечное ожидание, чтобы Render не выключал сервис
+    while True:
+        await asyncio.sleep(3600)
+
+if __name__ == "__main__":
+    asyncio.run(main())
